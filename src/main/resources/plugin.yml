@@ -1,5 +1,5 @@
 name: FwindEmiCore
-version: '0.1.0'
+version: '0.0.9-SNAPSHOT'
 main: org.MiragEdge.fwindEmiCore.FwindEmiCore
 api-version: '1.21'
 prefix: FEC

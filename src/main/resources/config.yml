@@ -1,10 +1,10 @@
 # 插件主配置
 config-version: 1.0
-debug: false
+debug: true
 
 # 胡萝卜镐配置
 carrot-pickaxe:
-  debug: false
+  debug: true
   # 物品的命名空间ID (必须与ItemsAdder配置一致)
   item-id: "carrot_pickaxe"
 

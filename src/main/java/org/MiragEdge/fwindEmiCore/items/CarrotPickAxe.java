@@ -39,19 +39,19 @@ public class CarrotPickAxe implements Listener {
     public void loadConfig() {
         ConfigurationSection config = plugin.getConfig().getConfigurationSection("carrot-pickaxe");
         if (config == null) {
-            plugin.getLogger().severe("[胡萝卜镐] 配置节不存在，模块已禁用！");
+            plugin.getLogger().severe("\\u001B[31m[胡萝卜镐] 配置节不存在，模块已禁用！\\u001B[0m");
             this.triggerChance = 0;
             return;
         }
 
         // 调试模式
         this.debugMode = config.getBoolean("debug", plugin.getConfig().getBoolean("debug", false));
-        debugLog(() -> "调试模式: " + (debugMode ? "启用" : "禁用"));
+        debugLog(() -> "调试模式: " + (debugMode ? "\\u001B[33m启用\\u001B[0m" : "\\u001B[34m禁用\\u001B[0m"));
 
         // 物品ID校验
         this.customItemId = config.getString("item-id", "carrot_pickaxe");
         if (!customItemId.matches("^[a-z0-9_]+$")) {
-            plugin.getLogger().severe("[胡萝卜镐] 物品ID格式错误，使用默认值！");
+            plugin.getLogger().severe("\\u001B[31m[胡萝卜镐] 物品ID格式错误，使用默认值！\\u001B[0m");
             customItemId = "carrot_pickaxe";
         }
 
@@ -86,7 +86,7 @@ public class CarrotPickAxe implements Listener {
         if (!registered) {
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
             registered = true;
-            plugin.getLogger().info("[模块] 胡萝卜镐 事件监听已注册");
+            plugin.getLogger().info("\\u001B[32m[模块] 胡萝卜镐 事件监听已注册\\u001B[0m");
         }
     }
 
@@ -95,7 +95,7 @@ public class CarrotPickAxe implements Listener {
         if (registered) {
             HandlerList.unregisterAll(this);
             registered = false;
-            plugin.getLogger().info("[模块] 胡萝卜镐 事件监听已注销");
+            plugin.getLogger().info("\\u001B[32m[模块] 胡萝卜镐 事件监听已注销\\u001B[0m");
         }
     }
 
@@ -178,13 +178,13 @@ public class CarrotPickAxe implements Listener {
     @EventHandler
     public void onItemsAdderLoad(ItemsAdderLoadDataEvent event) {
         isItemsAdderLoaded = true;
-        plugin.getLogger().info("[模块] 胡萝卜镐 ItemsAdder数据加载完成");
+        plugin.getLogger().info("\\u001B[32m[模块] 胡萝卜镐 ItemsAdder数据加载完成\\u001B[0m");
 
         CustomStack item = CustomStack.getInstance(customItemId);
         if (item == null) {
-            plugin.getLogger().severe("[胡萝卜镐] 自定义物品加载失败: " + customItemId);
+            plugin.getLogger().severe("\\u001B[31m[胡萝卜镐] 自定义物品加载失败: \\u001B[0m" + customItemId);
         } else {
-            debugLog(() -> "物品校验成功: " + item.getId());
+            debugLog(() -> "\\u001B[32m物品校验成功: \\u001B[0m" + item.getId());
         }
     }
 }
