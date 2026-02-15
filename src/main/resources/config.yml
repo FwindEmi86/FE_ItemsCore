@@ -1,21 +1,18 @@
 # 插件主配置
 config-version: 1.0
-debug: true
+debug: false
 
 # 胡萝卜镐配置
 carrot-pickaxe:
   debug: true
-  # 物品的命名空间ID (必须与ItemsAdder配置一致)
-  item-id: "carrot_pickaxe"
-
+  # 物品的命名空间ID (必须与CraftEngine配置一致)
+  item-id: "miragedge_items:carrot_pickaxe"
   # 触发概率 (1-100)
   trigger-chance: 25
-
   # 掉落物设置
   drops:
     min: 1
     max: 3
-
   # 生效方块列表 (使用游戏内方块ID)
   enabled-blocks:
     - "COAL_ORE"
@@ -27,3 +24,25 @@ carrot-pickaxe:
     - "DIAMOND_ORE"
     - "DEEPSLATE_DIAMOND_ORE"
     - "NETHER_QUARTZ_ORE"
+
+# 辛辣之刃配置
+spicy-blade:
+  debug: true
+  # 物品的命名空间ID (必须与CraftEngine配置一致)
+  item-id: "miragedge_items:spicy_blade"
+  # 点燃目标的概率 (1-100)
+  ignite-chance: 80
+  # 施加失明效果的概率 (1-100)
+  blind-chance: 100
+  # 点燃持续时间 (秒)
+  ignite-duration: 5
+  # 速度降低持续时间 (秒)
+  speed-reduction-duration: 5
+  # 速度降低百分比 (0.0-1.0, 0.3 = 30%)
+  speed-reduction-percent: 0.3
+  # 失明效果范围 (方块)
+  blind-radius: 3.0
+  # 失明持续时间 (秒)
+  blind-duration: 1
+  # 末影人眩晕持续时间 (毫秒)
+  enderman-stun-duration: 500

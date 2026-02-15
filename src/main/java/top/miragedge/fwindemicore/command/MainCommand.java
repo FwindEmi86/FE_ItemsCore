@@ -1,7 +1,6 @@
-package org.MiragEdge.fwindEmiCore.command;
+package top.miragedge.fwindemicore.command;
 
-import org.MiragEdge.fwindEmiCore.FwindEmiCore;
-import org.MiragEdge.fwindEmiCore.items.CarrotPickAxe;
+import top.miragedge.fwindemicore.FwindEmiCore;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

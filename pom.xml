@@ -6,7 +6,7 @@
 
     <groupId>top.MiragEdge</groupId>
     <artifactId>FwindEmiCore</artifactId>
-    <version>0.0.9</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>FwindEmiCore</name>
@@ -51,10 +51,10 @@
     </build>
 
     <repositories>
-        <!-- 添加 ItemsAdder 官方仓库 -->
+        <!-- CraftEngine 仓库 -->
         <repository>
-        <id>matteodev</id>
-        <url>https://maven.devs.beer/</url>
+            <id>momirealms-repo</id>
+            <url>https://repo.momirealms.net/releases/</url>
         </repository>
         <!-- 其他必须 -->
         <repository>
@@ -67,10 +67,17 @@
         </repository>
     </repositories>
     <dependencies>
+        <!-- CraftEngine 依赖 -->
         <dependency>
-            <groupId>dev.lone</groupId>
-            <artifactId>api-itemsadder</artifactId>
-            <version>4.0.10</version> <!-- 需与服务端插件版本一致 -->
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-core</artifactId>
+            <version>0.0.60</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.momirealms</groupId>
+            <artifactId>craft-engine-bukkit</artifactId>
+            <version>0.0.60</version>
             <scope>provided</scope>
         </dependency>
         <!-- Paper API 依赖 -->

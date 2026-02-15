@@ -1,13 +1,13 @@
 name: FwindEmiCore
-version: '0.0.9-SNAPSHOT'
-main: org.MiragEdge.fwindEmiCore.FwindEmiCore
+version: '0.1'
+main: top.miragedge.fwindemicore.FwindEmiCore
 api-version: '1.21'
 prefix: FEC
 authors: [ FwindEmi ]
 description: FwindEmi-Core
 website: miragedge.top
 softdepend:
-  - ItemsAdder
+  - CraftEngine
   - PlaceholderAPI
 commands:
   fwindemicore:
