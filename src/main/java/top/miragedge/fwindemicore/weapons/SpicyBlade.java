@@ -1,29 +1,40 @@
 package top.miragedge.fwindemicore.weapons;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import net.kyori.adventure.key.Key;
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
 import net.momirealms.craftengine.core.item.CustomItem;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 
 public class SpicyBlade implements Listener {
 
-    // private boolean debugMode; // 已禁用调试模式
     private final JavaPlugin plugin;
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
     private boolean registered = false;
@@ -38,6 +49,17 @@ public class SpicyBlade implements Listener {
     private double blindRadius;
     private int blindDuration;
     private int endermanStunDuration;
+    // 新增：攻速提升参数
+    private boolean attackSpeedSkillEnabled; // 是否启用攻速技能
+    private double attackSpeedIncrease;
+    private int attackSpeedDuration;
+    private int attackSpeedCooldown;
+
+    // 冷却时间追踪
+    private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    
+    // ProtocolLib包监听器
+    private PacketAdapter useItemPacketAdapter;
 
     public SpicyBlade(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -70,36 +92,115 @@ public class SpicyBlade implements Listener {
         this.blindRadius = config.getDouble("blind-radius", 3.0); // 3格范围
         this.blindDuration = config.getInt("blind-duration", 1); // 1秒
         this.endermanStunDuration = config.getInt("enderman-stun-duration", 500); // 0.5秒（毫秒）
-
-
+        
+        // 新增：攻速提升参数
+        this.attackSpeedSkillEnabled = config.getBoolean("attack-speed-skill-enabled", false); // 默认不启用
+        this.attackSpeedIncrease = config.getDouble("attack-speed-increase-percent", 0.4); // 40%攻速提升
+        this.attackSpeedDuration = config.getInt("attack-speed-duration", 10); // 10秒持续时间
+        this.attackSpeedCooldown = config.getInt("attack-speed-cooldown", 18); // 18秒冷却时间
     }
 
     //注册事件
     public void register() {
         if (!registered) {
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
+            
+            // 注册ProtocolLib包监听器
+            registerPacketListener();
+            
             registered = true;
             plugin.getLogger().info("[模块] 辛辣之刃 事件监听已注册");
         }
+    }
+    
+    // 注册ProtocolLib包监听器
+    private void registerPacketListener() {
+        useItemPacketAdapter = new PacketAdapter(plugin, PacketType.Play.Client.USE_ITEM) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                if (event.getPacketType() == PacketType.Play.Client.USE_ITEM) {
+                    onUseItemPacket(event);
+                }
+            }
+        };
+        
+        ProtocolLibrary.getProtocolManager().addPacketListener(useItemPacketAdapter);
     }
 
     //卸载事件
     public void unregister() {
         if (registered) {
             HandlerList.unregisterAll(this);
+            
+            // 注销ProtocolLib包监听器
+            unregisterPacketListener();
+            
             registered = false;
             plugin.getLogger().info("[模块] 辛辣之刃 事件监听已注销");
         }
     }
-
-    // 调试日志工具已禁用
-    /*
-    private void debugLog(Supplier<String> message) {
-        if (debugMode) {
-            plugin.getLogger().info("[调试] " + message.get());
+    
+    // 注销ProtocolLib包监听器
+    private void unregisterPacketListener() {
+        if (useItemPacketAdapter != null) {
+            ProtocolLibrary.getProtocolManager().removePacketListener(useItemPacketAdapter);
+            useItemPacketAdapter = null;
         }
     }
-    */
+
+    // 使用ProtocolLib处理右键技能
+    private void onUseItemPacket(PacketEvent event) {
+        if (!event.isServerPacket()) {
+            Player player = event.getPlayer();
+            ItemStack weapon = player.getInventory().getItemInMainHand();
+
+            if (!isHoldingSpicyBlade(weapon)) return;
+
+            // 检查攻速技能是否启用
+            if (!attackSpeedSkillEnabled) {
+                return; // 如果未启用，则直接返回，不执行技能
+            }
+
+            // 检查是否在冷却中
+            UUID playerId = player.getUniqueId();
+            long currentTime = System.currentTimeMillis();
+            long lastUse = cooldowns.getOrDefault(playerId, 0L);
+            long timeSinceLastUse = currentTime - lastUse;
+            long cooldownTimeLeft = (attackSpeedCooldown * 1000) - timeSinceLastUse;
+
+            if (timeSinceLastUse < attackSpeedCooldown * 1000) {
+                // 显示冷却时间
+                int secondsLeft = (int) Math.ceil(cooldownTimeLeft / 1000.0);
+                player.sendActionBar("§c技能冷却中: §e" + secondsLeft + "s");
+                return;
+            }
+
+            // 应用攻速提升
+            applyAttackSpeedBoost(player);
+
+            // 更新冷却时间
+            cooldowns.put(playerId, currentTime);
+
+            // 显示ActionBar消息
+            player.sendActionBar("§a攻速提升 §e40% §a持续 §e" + attackSpeedDuration + "§a 秒");
+        }
+    }
+    
+    // 保留Bukkit事件用于其他右键交互（如点燃目标等）
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        ItemStack weapon = player.getInventory().getItemInMainHand();
+
+        if (!isHoldingSpicyBlade(weapon)) return;
+
+        // 检查攻速技能是否启用 - 如果启用了ProtocolLib版本，则跳过Bukkit版本的技能触发
+        // 仅保留其他功能（如点燃、失明等）的触发
+    }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
@@ -116,7 +217,6 @@ public class SpicyBlade implements Listener {
         if (!isHoldingSpicyBlade(weapon)) return;
 
 
-
         // 80% 概率点燃目标
         if (isIgniteSuccessful()) {
             igniteTarget(target);
@@ -124,6 +224,18 @@ public class SpicyBlade implements Listener {
 
         // 对范围内其他敌人施加失明效果
         applyBlindEffect(player, target);
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        AttributeInstance attackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        if (attackSpeedAttribute != null) {
+            // 使用现代API移除所有同名修饰符
+            attackSpeedAttribute.getModifiers().stream()
+                .filter(modifier -> "spicy_blade_attack_speed".equals(modifier.getKey().getKey()))
+                .forEach(modifier -> attackSpeedAttribute.removeModifier(modifier));
+        }
     }
 
     private boolean isHoldingSpicyBlade(ItemStack tool) {
@@ -153,11 +265,51 @@ public class SpicyBlade implements Listener {
         return success;
     }
 
+    private void applyAttackSpeedBoost(Player player) {
+        AttributeInstance attackSpeedAttribute = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        if (attackSpeedAttribute != null) {
+            // 先移除现有的同名修饰符
+            attackSpeedAttribute.getModifiers().stream()
+                .filter(modifier -> "spicy_blade_attack_speed".equals(modifier.getKey().getKey()))
+                .forEach(modifier -> attackSpeedAttribute.removeModifier(modifier));
+
+            // 创建新的攻速提升修饰符 - 增加原始攻速的一定百分比
+            // 例如，如果attackSpeedIncrease是0.4，这将使攻速增加40%
+            AttributeModifier modifier = new AttributeModifier(
+                    new NamespacedKey(plugin, "spicy_blade_attack_speed"), // 使用NamespacedKey
+                    attackSpeedIncrease, // 攻速增加的倍数
+                    AttributeModifier.Operation.MULTIPLY_SCALAR_1 // 将原始值乘以(1 + value)
+            );
+            
+            attackSpeedAttribute.addModifier(modifier);
+
+            // 播放开始音效
+            player.playSound(player.getLocation(), "entity.arrow.shoot", 0.5F, 1.5F);
+
+            // 持续时间后移除攻速提升
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    AttributeInstance attr = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+                    if (attr != null) {
+                        // 移除特定名称的修饰符
+                        attr.getModifiers().stream()
+                            .filter(m -> "spicy_blade_attack_speed".equals(m.getKey().getKey()))
+                            .forEach(m -> attr.removeModifier(m));
+                            
+                        // 播放结束音效 (辣椒效果消失)
+                        player.playSound(player.getLocation(), "entity.enderman.teleport", 0.4F, 0.7F);
+                    }
+                }
+            }.runTaskLater(plugin, attackSpeedDuration * 20L); // 转换为ticks
+        }
+    }
+
     private void igniteTarget(Entity target) {
         if (target instanceof LivingEntity) {
             LivingEntity livingTarget = (LivingEntity) target;
             livingTarget.setFireTicks(igniteDuration * 20); // 转换为tick
-    
+
 
             // 使目标移动速度降低30%，持续5秒
             AttributeInstance speedAttribute = livingTarget.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
@@ -207,7 +359,7 @@ public class SpicyBlade implements Listener {
                         }
                     };
                     task.runTaskLater(plugin, endermanStunDuration / 50); // 转换为tick
-            
+        
                 }
             }
         }

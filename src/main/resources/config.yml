@@ -46,3 +46,11 @@ spicy-blade:
   blind-duration: 1
   # 末影人眩晕持续时间 (毫秒)
   enderman-stun-duration: 500
+  # 是否启用攻速提升技能
+  attack-speed-skill-enabled: true
+  # 攻速提升百分比 (0.0-1.0, 0.4 = 40%)
+  attack-speed-increase-percent: 0.4
+  # 攻速提升持续时间 (秒)
+  attack-speed-duration: 10
+  # 攻速技能冷却时间 (秒)
+  attack-speed-cooldown: 18

@@ -9,6 +9,7 @@ website: miragedge.top
 softdepend:
   - CraftEngine
   - PlaceholderAPI
+  - ProtocolLib
 commands:
   fwindemicore:
     aliases: [fec]
