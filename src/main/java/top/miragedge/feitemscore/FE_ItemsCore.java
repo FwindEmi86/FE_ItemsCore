@@ -1,12 +1,12 @@
-package top.miragedge.fwindemicore;
+package top.miragedge.feitemscore;
 
-import top.miragedge.fwindemicore.command.MainCommand;
-import top.miragedge.fwindemicore.tools.CarrotPickAxe;
-import top.miragedge.fwindemicore.weapons.SpicyBlade;
+import top.miragedge.feitemscore.command.MainCommand;
+import top.miragedge.feitemscore.tools.CarrotPickAxe;
+import top.miragedge.feitemscore.weapons.SpicyBlade;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class FwindEmiCore extends JavaPlugin {
+public class FE_ItemsCore extends JavaPlugin {
 
     private CarrotPickAxe carrotPickAxeModule;
     private SpicyBlade spicyBladeModule;
@@ -15,8 +15,8 @@ public class FwindEmiCore extends JavaPlugin {
     public void onEnable() {
         // 注册命令（关键修改点）
         MainCommand mainCommand = new MainCommand(this);
-        getCommand("fwindemicore").setExecutor(mainCommand);
-        getCommand("fwindemicore").setTabCompleter(mainCommand);
+        getCommand("feitemscore").setExecutor(mainCommand);
+        getCommand("feitemscore").setTabCompleter(mainCommand);
         // 首次初始化
         initializePlugin();
         getLogger().info("[核心] 插件已启用！");

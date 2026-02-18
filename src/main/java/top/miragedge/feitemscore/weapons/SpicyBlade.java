@@ -1,10 +1,9 @@
-package top.miragedge.fwindemicore.weapons;
+package top.miragedge.feitemscore.weapons;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import net.kyori.adventure.key.Key;
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
 import net.momirealms.craftengine.core.item.CustomItem;
 import org.bukkit.Material;

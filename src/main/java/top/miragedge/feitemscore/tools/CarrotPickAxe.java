@@ -1,4 +1,4 @@
-package top.miragedge.fwindemicore.tools;
+package top.miragedge.feitemscore.tools;
 
 import net.momirealms.craftengine.bukkit.api.CraftEngineItems;
 import net.momirealms.craftengine.core.item.CustomItem;
@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class CarrotPickAxe implements Listener {

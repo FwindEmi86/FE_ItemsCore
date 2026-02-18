@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>top.MiragEdge</groupId>
-    <artifactId>FwindEmiCore</artifactId>
-    <version>0.1</version>
+    <artifactId>FE_ItemsCore</artifactId>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
-    <name>FwindEmiCore</name>
+    <name>FE_ItemsCore</name>
 
     <properties>
         <java.version>21</java.version>
@@ -18,6 +18,7 @@
 
     <build>
         <defaultGoal>clean package</defaultGoal>
+        <finalName>[F][物品功核心]FE_ItemsCore</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -1,6 +1,6 @@
-package top.miragedge.fwindemicore.command;
+package top.miragedge.feitemscore.command;
 
-import top.miragedge.fwindemicore.FwindEmiCore;
+import top.miragedge.feitemscore.FE_ItemsCore;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainCommand implements CommandExecutor, TabCompleter {
-    private final FwindEmiCore plugin; // 插件实例引用
+    private final FE_ItemsCore plugin; // 插件实例引用
 
     // 构造方法注入插件实例
-    public MainCommand(FwindEmiCore plugin) {
+    public MainCommand(FE_ItemsCore plugin) {
         this.plugin = plugin;
     }
 
@@ -22,7 +22,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         // 主命令匹配（支持别名）
-        if (!command.getName().equalsIgnoreCase("fwindemicore") && !command.getName().equalsIgnoreCase("fec")) {
+        if (!command.getName().equalsIgnoreCase("feitemscore") && !command.getName().equalsIgnoreCase("fec")) {
             return false;
         }
 
@@ -56,7 +56,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
     private void handleReloadCommand(CommandSender sender, String[] args) {
         // 权限检查
-        if (!sender.hasPermission("fwindemicore.reload")) {
+        if (!sender.hasPermission("feitemscore.reload")) {
             sender.sendMessage("§c你没有权限执行此命令!");
             return;
         }

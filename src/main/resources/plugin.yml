@@ -1,10 +1,10 @@
-name: FwindEmiCore
-version: '0.1'
-main: top.miragedge.fwindemicore.FwindEmiCore
+name: FE_ItemsCore
+version: '0.3'
+main: top.miragedge.feitemscore.FE_ItemsCore
 api-version: '1.21'
 prefix: FEC
-authors: [ FwindEmi ]
-description: FwindEmi-Core
+authors: [ F.windEmiko ]
+description: FE_ItemsCore
 website: miragedge.top
 softdepend:
   - CraftEngine
@@ -13,7 +13,7 @@ softdepend:
 commands:
   fwindemicore:
     aliases: [fec]
-    description: FwindEmiCore主命令
+    description: FE_ItemsCore主命令
     usage: /<command> [info|reload]
 permissions:
   fwindemicore.reload:
